@@ -74,18 +74,18 @@ export default function ContactPage() {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "30px", marginBottom: "40px" }}>
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass-panel" style={{ padding: "30px", textAlign: "center" }}>
           <MapPin size={40} color="var(--primary)" style={{ marginBottom: "15px" }} />
-          <h3>Garage Base</h3>
-          <p style={{ opacity: 0.7, marginTop: "10px" }}>123 Engine Block Rd<br/>Speedway City, TX 78000</p>
+          <h3>Location</h3>
+          <p style={{ opacity: 0.7, marginTop: "10px" }}>Pandan 7<br />Kuala Belait</p>
         </motion.div>
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass-panel" style={{ padding: "30px", textAlign: "center" }}>
           <Mail size={40} color="var(--primary)" style={{ marginBottom: "15px" }} />
           <h3>Email</h3>
-          <p style={{ opacity: 0.7, marginTop: "10px" }}>fuel@hotwheelscoffee.com</p>
+          <p style={{ opacity: 0.7, marginTop: "10px" }}>chase1610@gmail.com</p>
         </motion.div>
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="glass-panel" style={{ padding: "30px", textAlign: "center" }}>
           <Phone size={40} color="var(--primary)" style={{ marginBottom: "15px" }} />
-          <h3>Comm Link</h3>
-          <p style={{ opacity: 0.7, marginTop: "10px" }}>+1 (555) 867-5309</p>
+          <h3>Contact Line</h3>
+          <p style={{ opacity: 0.7, marginTop: "10px" }}>+673 868 3441</p>
         </motion.div>
       </div>
 

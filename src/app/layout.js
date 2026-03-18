@@ -10,8 +10,8 @@ import { ThemeProvider } from "@/lib/ThemeContext";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata = {
-  title: "Hotwheels Coffee",
-  description: "Mobile first online coffee shop",
+  title: "Chase",
+  description: "Chase the Caffeine",
 };
 
 export default function RootLayout({ children }) {

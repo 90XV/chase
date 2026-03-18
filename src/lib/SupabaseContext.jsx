@@ -48,6 +48,8 @@ export function SupabaseProvider({ children }) {
           setMenuItems(prev => prev.map(item => item.id === payload.new.id ? mapItem(payload.new) : item));
         } else if (payload.eventType === 'INSERT') {
           setMenuItems(prev => [...prev, mapItem(payload.new)]);
+        } else if (payload.eventType === 'DELETE') {
+          setMenuItems(prev => prev.filter(item => item.id !== payload.old.id));
         }
       })
       .subscribe();
@@ -117,6 +119,8 @@ export function SupabaseProvider({ children }) {
       dbUpdates.icon_name = dbUpdates.iconName;
       delete dbUpdates.iconName;
     }
+    // Remove image update since column seems to be missing in DB
+    delete dbUpdates.image;
 
     setMenuItems(prev => prev.map(item => item.id === id ? { ...item, ...updates } : item));
     await supabase.from('menu_items').update(dbUpdates).eq('id', id);
@@ -236,8 +240,26 @@ export function SupabaseProvider({ children }) {
     await supabase.from('partners').delete().eq('id', id);
   };
 
+  const addMenuItem = async (item) => {
+    const dbItem = { 
+      name: item.name, 
+      price: parseFloat(item.price), 
+      stock_level: parseInt(item.stockLevel) || 0, 
+      icon_name: item.iconName || "Coffee", 
+      description: item.description || "",
+      status: parseInt(item.stockLevel) > 0 ? "In Stock" : "Sold Out"
+    };
+    const { error } = await supabase.from('menu_items').insert([dbItem]);
+    if (error) throw error;
+  };
+
+  const removeMenuItem = async (id) => {
+    setMenuItems(prev => prev.filter(item => item.id !== id));
+    await supabase.from('menu_items').delete().eq('id', id);
+  };
+
   return (
-    <SupabaseContext.Provider value={{ menuItems, orders, chats, contactMessages, partners, myActiveOrderId, updateItem, updateStock, submitOrder, updateOrderStatus, dismissActiveOrder, recoverOrder, sendMessage, markChatRead, markMessageRead, addPartner, updatePartner, removePartner, isLoaded }}>
+    <SupabaseContext.Provider value={{ menuItems, orders, chats, contactMessages, partners, myActiveOrderId, updateItem, updateStock, addMenuItem, removeMenuItem, submitOrder, updateOrderStatus, dismissActiveOrder, recoverOrder, sendMessage, markChatRead, markMessageRead, addPartner, updatePartner, removePartner, isLoaded }}>
       {children}
     </SupabaseContext.Provider>
   );

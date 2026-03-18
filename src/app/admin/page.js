@@ -6,7 +6,7 @@ import { Lock, Unlock, Image as ImageIcon, Coffee, Clock, CheckCircle, MessageSq
 import { motion } from "framer-motion";
 
 export default function AdminPage() {
-  const { menuItems, orders, chats, contactMessages, partners, sendMessage, markChatRead, markMessageRead, updateItem, updateStock, updateOrderStatus, addPartner, updatePartner, removePartner } = useDB();
+  const { menuItems, orders, chats, contactMessages, partners, sendMessage, markChatRead, markMessageRead, updateItem, updateStock, addMenuItem, removeMenuItem, updateOrderStatus, addPartner, updatePartner, removePartner } = useDB();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState("");
   const [activeTab, setActiveTab] = useState("inventory"); // 'inventory' | 'orders' | 'inbox' | 'partners'
@@ -14,6 +14,8 @@ export default function AdminPage() {
   const [chatMsg, setChatMsg] = useState("");
   const [newPartner, setNewPartner] = useState({ company_name: "", contact_number: "", website: "", bio: "", images: [] });
   const [editingPartner, setEditingPartner] = useState(null);
+  const [newMenu, setNewMenu] = useState({ name: "", price: "", stockLevel: "", iconName: "Coffee", description: "" });
+  const [showAddMenu, setShowAddMenu] = useState(false);
 
   // Mark as read whenever the chat active tab is open and chats update
   useEffect(() => {
@@ -116,7 +118,66 @@ export default function AdminPage() {
 
       {activeTab === "inventory" && (
         <div className="glass-panel" style={{ padding: "30px", overflowX: "auto" }}>
-        <h2 style={{ marginBottom: "20px" }}>Inventory & Menu Management</h2>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+          <h2>Inventory & Menu Management</h2>
+          <button 
+            onClick={() => setShowAddMenu(!showAddMenu)}
+            style={{ display: "flex", alignItems: "center", gap: "8px", background: "var(--primary)", border: "none", color: "#fff", padding: "8px 16px", borderRadius: "20px", cursor: "pointer", fontWeight: "700" }}
+          >
+            {showAddMenu ? <X size={16} /> : <Plus size={16} />} {showAddMenu ? "Cancel" : "Add New Item"}
+          </button>
+        </div>
+
+        {showAddMenu && (
+          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="glass-panel-dark" style={{ padding: "20px", marginBottom: "30px", overflow: "hidden" }}>
+            <h3 style={{ marginBottom: "15px" }}>Register New Item</h3>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "15px" }}>
+              <input 
+                type="text" placeholder="Item Name" value={newMenu.name}
+                onChange={e => setNewMenu({...newMenu, name: e.target.value})}
+                style={{ padding: "10px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.05)", color: "inherit" }}
+              />
+              <input 
+                type="number" step="0.50" placeholder="Price ($)" value={newMenu.price}
+                onChange={e => setNewMenu({...newMenu, price: e.target.value})}
+                style={{ padding: "10px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.05)", color: "inherit" }}
+              />
+              <input 
+                type="number" placeholder="Stock Level" value={newMenu.stockLevel}
+                onChange={e => setNewMenu({...newMenu, stockLevel: e.target.value})}
+                style={{ padding: "10px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.05)", color: "inherit" }}
+              />
+              <input 
+                type="text" placeholder="Icon (Coffee, Zap, etc)" value={newMenu.iconName}
+                onChange={e => setNewMenu({...newMenu, iconName: e.target.value})}
+                style={{ padding: "10px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.05)", color: "inherit" }}
+              />
+            </div>
+            <div style={{ marginTop: "15px" }}>
+              <textarea 
+                placeholder="Item Description (Visible to customers)" value={newMenu.description}
+                onChange={e => setNewMenu({...newMenu, description: e.target.value})}
+                style={{ width: "100%", padding: "10px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.05)", color: "inherit", height: "80px" }}
+              />
+            </div>
+            <button 
+              onClick={async () => {
+                if (!newMenu.name || !newMenu.price) return alert("Name and price are required");
+                try {
+                  await addMenuItem(newMenu);
+                  setNewMenu({ name: "", price: "", stockLevel: "", iconName: "Coffee", description: "" });
+                  setShowAddMenu(false);
+                  alert("Menu item added successfully!");
+                } catch (err) {
+                  alert("Failed to add menu item: " + err.message);
+                }
+              }}
+              className="btn-primary" style={{ marginTop: "15px" }}
+            >
+              Confirm Addition
+            </button>
+          </motion.div>
+        )}
         
         <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", minWidth: "600px" }}>
           <thead>
@@ -158,11 +219,25 @@ export default function AdminPage() {
                     {item.status}
                   </span>
                 </td>
-                <td style={{ padding: "15px 10px" }}>
-                  <button onClick={() => handleImageChange(item.id)} style={{ display: "flex", alignItems: "center", gap: "5px", padding: "6px 12px", background: "var(--primary)", border: "none", color: "#fff", borderRadius: "15px", cursor: "pointer", fontSize: "0.8rem" }}>
-                    <ImageIcon size={14} /> Update Pic
-                  </button>
-                </td>
+                 <td style={{ padding: "15px 10px" }}>
+                   <div style={{ display: "flex", gap: "8px" }}>
+                    <button 
+                      onClick={async () => {
+                        if (confirm(`Are you sure you want to remove ${item.name}? This cannot be undone.`)) {
+                          try {
+                            await removeMenuItem(item.id);
+                            alert("Item removed.");
+                          } catch (err) {
+                            alert("Failed to remove item: " + err.message);
+                          }
+                        }
+                      }}
+                      style={{ background: "rgba(231, 76, 60, 0.2)", border: "none", color: "#e74c3c", padding: "8px", borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                   </div>
+                 </td>
               </tr>
             ))}
           </tbody>

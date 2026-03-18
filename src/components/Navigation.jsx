@@ -1,18 +1,18 @@
 "use client";
-
+ 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Menu, X, ShoppingCart, Sun, Moon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "@/lib/ThemeContext";
-
+ 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
   const isAdmin = pathname.startsWith("/admin");
-
+ 
   const links = [
     { name: "Home", href: "/" },
     { name: "Order", href: "/order" },
@@ -20,20 +20,25 @@ export default function Navigation() {
     { name: "Partners", href: "/partners" },
     { name: "Contact", href: "/contact" },
   ];
-
+ 
   return (
     <nav className="glass-panel" style={{ position: "sticky", top: 0, zIndex: 100, borderRadius: "0 0 12px 12px", margin: "0 10px", padding: "15px 20px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <Link href={isAdmin ? "/admin" : "/"} style={{ fontSize: "1.5rem", fontWeight: "900", color: "var(--accent)", textTransform: "uppercase", letterSpacing: "2px" }}>
-          Hotwheels <span style={{color: "var(--primary)"}}>Coffee</span>
+        <Link href={isAdmin ? "/admin" : "/"} style={{ display: "flex", flexDirection: "column", textDecoration: "none" }}>
+          <span style={{ fontSize: "1.5rem", fontWeight: "900", color: "var(--accent)", textTransform: "uppercase", letterSpacing: "2px", lineHeight: 1 }}>
+            Chase
+          </span>
+          <span style={{ fontSize: "0.65rem", fontWeight: "600", color: "var(--primary)", textTransform: "uppercase", letterSpacing: "1.5px" }}>
+            Chase the Caffeine
+          </span>
         </Link>
-
+ 
         {/* Theme toggle always visible */}
         <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
           <button onClick={toggleTheme} style={{ background: "transparent", border: "none", color: "inherit", cursor: "pointer", display: "flex", alignItems: "center" }}>
             {theme === "light" ? <Moon size={22} /> : <Sun size={22} />}
           </button>
-
+ 
           {/* Nav links — hidden on /admin */}
           {!isAdmin && (
             <>
@@ -48,7 +53,7 @@ export default function Navigation() {
                   <ShoppingCart size={18} /> Cart
                 </Link>
               </div>
-
+ 
               {/* Mobile Hamburger */}
               <button onClick={() => setIsOpen(!isOpen)} style={{ background: "none", border: "none", color: "inherit", cursor: "pointer", display: "none" }} className="mobile-hamburger">
                 {isOpen ? <X size={28} /> : <Menu size={28} />}
@@ -57,7 +62,7 @@ export default function Navigation() {
           )}
         </div>
       </div>
-
+ 
       {/* Mobile Menu */}
       {!isAdmin && (
         <AnimatePresence>
@@ -80,7 +85,7 @@ export default function Navigation() {
           )}
         </AnimatePresence>
       )}
-
+ 
       <style jsx>{`
         @media (min-width: 768px) {
           .desktop-nav { display: flex !important; align-items: center; }
