@@ -1,33 +1,37 @@
 :root {
   /* LIGHT THEME (DEFAULT) */
-  --primary: #4a7089;       
-  --background: #fffbf3;    
-  --accent: #2e4a5e; /* Darker primary for contrast */       
-  --text-dark: #1a2a35; /* Deep blue-grey instead of black */
+  --primary: #4a7089;
+  --background: #fffbf3;
+  --accent: #2e4a5e;
+  /* Darker primary for contrast */
+  --text-dark: #1a2a35;
+  /* Deep blue-grey instead of black */
   --text-light: #ffffff;
   --accent-text: #375971;
 
-  --surface: rgba(240, 246, 250, 0.85); /* Cool light blue tint */
-  --surface-dark: rgba(220, 230, 238, 0.9); /* Cool dark blue tint */
+  --surface: rgba(240, 246, 250, 0.85);
+  /* Cool light blue tint */
+  --surface-dark: rgba(220, 230, 238, 0.9);
+  /* Cool dark blue tint */
   --border-radius: 12px;
   --glass-border: 1px solid rgba(74, 112, 137, 0.2);
   --glass-shadow: 0 8px 32px 0 rgba(74, 112, 137, 0.15);
-  
+
   --grid-line: rgba(74, 112, 137, 0.08);
-  --font-display: 'Inter', system-ui, sans-serif;
+  --font-display: var(--font-rock-salt), cursive, system-ui, sans-serif;
 }
 
 [data-theme='dark'] {
-  --background: #050505;    
-  --accent: #fffbf3;       
-  --accent-text: #fffbf3; 
+  --background: #050505;
+  --accent: #fffbf3;
+  --accent-text: #fffbf3;
   --text-dark: #ffffff;
-  
+
   --surface: rgba(15, 15, 15, 0.6);
   --surface-dark: rgba(20, 20, 20, 0.8);
   --glass-border: 1px solid rgba(255, 255, 255, 0.08);
   --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-  
+
   --grid-line: rgba(255, 255, 255, 0.03);
 }
 
@@ -41,6 +45,7 @@ body {
   background-color: var(--background);
   color: var(--text-dark);
   font-family: var(--font-display);
+  font-weight: 400;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -55,8 +60,8 @@ a {
 
 /* Chequered Pattern (Subtle trendy dark version) */
 .pattern-chequered {
-  background-image: 
-    linear-gradient(45deg, var(--grid-line) 25%, transparent 25%, transparent 75%, var(--grid-line) 75%, var(--grid-line)), 
+  background-image:
+    linear-gradient(45deg, var(--grid-line) 25%, transparent 25%, transparent 75%, var(--grid-line) 75%, var(--grid-line)),
     linear-gradient(45deg, var(--grid-line) 25%, transparent 25%, transparent 75%, var(--grid-line) 75%, var(--grid-line));
   background-size: 30px 30px;
   background-position: 0 0, 15px 15px;
@@ -65,7 +70,7 @@ a {
 
 /* Liquid Glass Elements */
 .glass-panel {
-  background: var(--surface);
+  /*background: var(--surface);*/
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: var(--glass-border);

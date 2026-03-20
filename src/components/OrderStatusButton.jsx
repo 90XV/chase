@@ -15,8 +15,8 @@ export default function OrderStatusButton() {
   const scrollRef = useRef(null);
 
   const order = orders.find(o => o.id === myActiveOrderId);
-  
-  const orderChats = chats.filter(c => c.order_id === myActiveOrderId).sort((a,b) => new Date(a.created_at || a.createdAt) - new Date(b.created_at || b.createdAt));
+
+  const orderChats = chats.filter(c => c.order_id === myActiveOrderId).sort((a, b) => new Date(a.created_at || a.createdAt) - new Date(b.created_at || b.createdAt));
   const unreadCount = orderChats.filter(c => c.sender === 'admin' && !c.is_read).length;
 
   useEffect(() => {
@@ -80,7 +80,7 @@ export default function OrderStatusButton() {
               </button>
               <p style={{ fontWeight: "700", marginBottom: "5px", fontSize: "0.95rem" }}>Have a pending order?</p>
               <p style={{ opacity: 0.7, fontSize: "0.8rem", marginBottom: "12px" }}>Enter your queue number to track it.</p>
-              <div style={{ display: "flex", gap: "8px" }}>
+              <div style={{ display: "flex" }}>
                 <input
                   type="text"
                   placeholder="#13 or ORD-XXXXXX"
@@ -89,7 +89,7 @@ export default function OrderStatusButton() {
                   onKeyDown={e => e.key === "Enter" && handleLookup()}
                   style={{ flex: 1, padding: "8px 12px", borderRadius: "20px", border: "1px solid var(--glass-border)", background: "transparent", color: "inherit", outline: "none", fontSize: "0.9rem" }}
                 />
-                <button onClick={handleLookup} className="btn-primary" style={{ padding: "8px 14px", fontSize: "0.85rem", display: "flex", alignItems: "center", gap: "4px" }}>
+                <button onClick={handleLookup} className="btn-primary" style={{ padding: "8px 14px", fontSize: "0.85rem", display: "flex", alignItems: "center" }}>
                   <Search size={14} /> Go
                 </button>
               </div>
@@ -156,9 +156,9 @@ export default function OrderStatusButton() {
         key={`status-btn-${order.status}`}
         initial={{ scale: 0 }}
         animate={{ scale: 1, y: [0, -10, 0] }}
-        transition={{ 
+        transition={{
           scale: { type: "spring", stiffness: 260, damping: 20 },
-          y: { repeat: Infinity, duration: 2, ease: "easeInOut" } 
+          y: { repeat: Infinity, duration: 2, ease: "easeInOut" }
         }}
         onClick={() => setIsOpen(true)}
         style={{
@@ -227,7 +227,7 @@ export default function OrderStatusButton() {
                 color: "var(--text-dark)"
               }}
             >
-              <button 
+              <button
                 onClick={() => setIsOpen(false)}
                 style={{ position: "absolute", top: "15px", right: "15px", background: "none", border: "none", color: "inherit", cursor: "pointer" }}
               >
@@ -237,15 +237,15 @@ export default function OrderStatusButton() {
               <h2 style={{ marginBottom: "5px", color: "var(--accent)" }}>Order Tracker</h2>
               <p style={{ opacity: 0.7, marginBottom: "20px", fontSize: "0.85rem" }}>{order.id}</p>
 
-              <motion.div 
+              <motion.div
                 key={order.status}
-                initial={{ scale: 0.5, opacity: 0}}
-                animate={{ scale: 1, opacity: 1}}
-                style={{ 
+                initial={{ scale: 0.5, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                style={{
                   margin: "0 auto 15px",
-                  width: "80px", 
-                  height: "80px", 
-                  borderRadius: "50%", 
+                  width: "80px",
+                  height: "80px",
+                  borderRadius: "50%",
                   backgroundColor: `${currentColor}20`,
                   color: currentColor,
                   display: "flex",
@@ -288,17 +288,17 @@ export default function OrderStatusButton() {
                   </button>
                 ) : (
                   <div style={{ display: "flex", gap: "5px" }}>
-                    <input 
-                      type="text" 
-                      value={msg} 
-                      onChange={e => setMsg(e.target.value)} 
+                    <input
+                      type="text"
+                      value={msg}
+                      onChange={e => setMsg(e.target.value)}
                       onKeyDown={e => { if (e.key === "Enter" && msg) { sendMessage(myActiveOrderId, "customer", msg); setMsg(""); } }}
-                      placeholder="Message..." 
+                      placeholder="Message..."
                       style={{ flex: 1, background: "transparent", border: "1px solid var(--glass-border)", color: "inherit", padding: "8px 12px", borderRadius: "20px", outline: "none", fontSize: "0.9rem" }}
                     />
-                    <button 
-                      onClick={() => { if(msg) { sendMessage(myActiveOrderId, "customer", msg); setMsg(""); } }}
-                      className="btn-primary" 
+                    <button
+                      onClick={() => { if (msg) { sendMessage(myActiveOrderId, "customer", msg); setMsg(""); } }}
+                      className="btn-primary"
                       style={{ padding: "8px", borderRadius: "50%", display: "flex", justifyContent: "center", alignItems: "center" }}
                     >
                       ✈️

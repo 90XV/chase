@@ -12,15 +12,15 @@ export default function Home() {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8 }}
         className="glass-panel"
-        style={{ padding: "40px", textAlign: "center", maxWidth: "800px", width: "100%" }}
+        style={{ padding: "40px", textAlign: "center", maxWidth: "600px", width: "100%" }}
       >
         <div style={{ display: "flex", justifyContent: "center", marginBottom: "10px" }}>
-          <div style={{ width: "450px", height: "200px", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+          <div style={{ width: "300px", height: "300px", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
             <img src="/CHASELOGO.png" alt="Chase Logo" onError={(e) => e.target.style.display = 'none'} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
           </div>
         </div>
         <p style={{ fontSize: "0.9rem", fontWeight: "700", color: "var(--primary)", textTransform: "uppercase", letterSpacing: "5px", marginBottom: "40px", opacity: 0.8 }}>
-          Chase the Caffeine
+          The Caffeine
         </p>
         <div style={{ display: "flex", gap: "20px", justifyContent: "center", flexWrap: "wrap" }}>
           <Link href="/order" className="btn-primary">
@@ -48,6 +48,22 @@ export default function Home() {
           <div>
             <h3 style={{ marginBottom: "10px" }}>🔥 Specialty Grade</h3>
             <p style={{ opacity: 0.8, fontSize: "0.9rem" }}>We select unique beans from all over the world.</p>
+          </div>
+        </div>
+      </motion.div>
+
+      <motion.div
+        initial={{ y: 50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.8, delay: 0.2 }}
+        className="glass-panel-dark"
+        style={{ padding: "30px", textAlign: "center", maxWidth: "600px", width: "100%" }}
+      >
+        <h2 style={{ color: "var(--accent)", marginBottom: "15px" }}>Partners are welcome!</h2>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "20px", textAlign: "left" }}>
+          <div>
+            <h3 style={{ marginBottom: "10px" }}>Small or Big</h3>
+            <p style={{ opacity: 0.8, fontSize: "0.9rem" }}>We welcome collaborators from all walks of life. </p>
           </div>
         </div>
       </motion.div>
