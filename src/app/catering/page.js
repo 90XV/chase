@@ -44,7 +44,7 @@ export default function CateringPage() {
         transition={{ delay: 0.2 }}
         style={{ maxWidth: "800px", margin: "60px auto 0" }}
       >
-        <div className="glass-panel" style={{ padding: "40px", textAlign: "center", marginBottom: "30px" }}>
+        <div className="glass-panel" style={{ padding: "40px", textAlign: "center", marginBottom: "30px", backdropFilter: "blur(10px)" }}>
           <h2 style={{ fontSize: "2rem", fontWeight: "900", marginBottom: "10px", color: "var(--accent)" }}>
             Ready to Book your <span style={{ color: "var(--primary)" }}>Event?</span>
           </h2>
@@ -54,26 +54,26 @@ export default function CateringPage() {
         </div>
 
         {/* Contact Cards */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "20px", marginBottom: "40px" }}>
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="glass-panel" style={{ padding: "25px", textAlign: "center" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "20px", marginBottom: "40px", backdropFilter: "blur(10px)" }}>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="glass-panel" style={{ padding: "25px", textAlign: "center", backdropFilter: "blur(10px)" }}>
             <Mail size={36} color="var(--primary)" style={{ marginBottom: "12px" }} />
             <h3 style={{ marginBottom: "8px" }}>Email</h3>
-            <p style={{ opacity: 0.7, fontSize: "0.9rem" }}>fuel@hotwheelscoffee.com</p>
+            <p style={{ opacity: 0.7, fontSize: "0.9rem" }}>chasecoffeebn@gmail.com</p>
           </motion.div>
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="glass-panel" style={{ padding: "25px", textAlign: "center" }}>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="glass-panel" style={{ padding: "25px", textAlign: "center", backdropFilter: "blur(10px)" }}>
             <Phone size={36} color="var(--primary)" style={{ marginBottom: "12px" }} />
             <h3 style={{ marginBottom: "8px" }}>Call / WhatsApp</h3>
-            <p style={{ opacity: 0.7, fontSize: "0.9rem" }}>+1 (555) 867-5309</p>
+            <p style={{ opacity: 0.7, fontSize: "0.9rem" }}>+673 865 6170</p>
           </motion.div>
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="glass-panel" style={{ padding: "25px", textAlign: "center" }}>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="glass-panel" style={{ padding: "25px", textAlign: "center", backdropFilter: "blur(10px)" }}>
             <Instagram size={36} color="var(--primary)" style={{ marginBottom: "12px" }} />
             <h3 style={{ marginBottom: "8px" }}>Instagram</h3>
-            <p style={{ opacity: 0.7, fontSize: "0.9rem" }}>@hotwheelscoffee</p>
+            <p style={{ opacity: 0.7, fontSize: "0.9rem" }}>@dzhotwheels</p>
           </motion.div>
         </div>
 
         {/* Catering Enquiry Form */}
-        <div className="glass-panel-dark" style={{ padding: "40px" }}>
+        <div className="glass-panel-dark" style={{ padding: "40px", backdropFilter: "blur(10px)" }}>
           <h2 style={{ marginBottom: "8px" }}>Send a Catering Enquiry</h2>
           <p style={{ opacity: 0.7, marginBottom: "25px", fontSize: "0.95rem" }}>Prefer we contact you? Send us your event details and we&apos;ll reach out to configure your package.</p>
 

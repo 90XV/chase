@@ -5,14 +5,14 @@ import { motion } from "framer-motion";
 
 export default function Home() {
   return (
-    <div className="container section" style={{ display: "flex", flexDirection: "column", gap: "60px", alignItems: "center", minHeight: "80vh", justifyContent: "center" }}>
+    <div className="container section" style={{ display: "flex", flexDirection: "column", gap: "30px", alignItems: "center", minHeight: "80vh", justifyContent: "center" }}>
 
       <motion.div
         initial={{ y: 50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8 }}
         className="glass-panel"
-        style={{ padding: "40px", textAlign: "center", maxWidth: "600px", width: "100%" }}
+        style={{ padding: "40px", textAlign: "center", maxWidth: "600px", width: "100%", backgroundColor: "var(--background)", backdropFilter: "blur(10px)" }}
       >
         <div style={{ display: "flex", justifyContent: "center", marginBottom: "10px" }}>
           <div style={{ width: "300px", height: "300px", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
@@ -37,7 +37,7 @@ export default function Home() {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, delay: 0.2 }}
         className="glass-panel-dark"
-        style={{ padding: "30px", textAlign: "center", maxWidth: "600px", width: "100%" }}
+        style={{ padding: "30px", textAlign: "center", maxWidth: "600px", width: "100%", backdropFilter: "blur(10px)" }}
       >
         <h2 style={{ color: "var(--accent)", marginBottom: "15px" }}>Why Chase?</h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "20px", textAlign: "left" }}>
@@ -57,7 +57,7 @@ export default function Home() {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, delay: 0.2 }}
         className="glass-panel-dark"
-        style={{ padding: "30px", textAlign: "center", maxWidth: "600px", width: "100%" }}
+        style={{ padding: "30px", textAlign: "center", maxWidth: "600px", width: "100%", backdropFilter: "blur(10px)" }}
       >
         <h2 style={{ color: "var(--accent)", marginBottom: "15px" }}>Partners are welcome!</h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "20px", textAlign: "left" }}>
@@ -68,6 +68,6 @@ export default function Home() {
         </div>
       </motion.div>
 
-    </div>
+    </div >
   );
 }

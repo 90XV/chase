@@ -72,24 +72,24 @@ export default function ContactPage() {
       </h1>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "30px", marginBottom: "40px" }}>
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass-panel" style={{ padding: "30px", textAlign: "center" }}>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass-panel" style={{ padding: "30px", textAlign: "center", backdropFilter: "blur(10px)" }}>
           <MapPin size={40} color="var(--primary)" style={{ marginBottom: "15px" }} />
           <h3>Location</h3>
           <p style={{ opacity: 0.7, marginTop: "10px" }}>Pandan 7<br />Kuala Belait</p>
         </motion.div>
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass-panel" style={{ padding: "30px", textAlign: "center" }}>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass-panel" style={{ padding: "30px", textAlign: "center", backdropFilter: "blur(10px)" }}>
           <Mail size={40} color="var(--primary)" style={{ marginBottom: "15px" }} />
           <h3>Email</h3>
-          <p style={{ opacity: 0.7, marginTop: "10px" }}>chase1610@gmail.com</p>
+          <p style={{ opacity: 0.7, marginTop: "10px" }}>chasecoffeebn@gmail.com</p>
         </motion.div>
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="glass-panel" style={{ padding: "30px", textAlign: "center" }}>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="glass-panel" style={{ padding: "30px", textAlign: "center", backdropFilter: "blur(10px)" }}>
           <Phone size={40} color="var(--primary)" style={{ marginBottom: "15px" }} />
           <h3>Contact Line</h3>
           <p style={{ opacity: 0.7, marginTop: "10px" }}>+673 868 3441</p>
         </motion.div>
       </div>
 
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="glass-panel-dark" style={{ padding: "40px" }}>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="glass-panel-dark" style={{ padding: "40px", backdropFilter: "blur(10px)" }}>
         <h2 style={{ marginBottom: "20px" }}>Send a dispatch</h2>
         <ContactForm source="general" />
       </motion.div>

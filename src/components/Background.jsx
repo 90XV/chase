@@ -16,7 +16,7 @@ export default function Background() {
     window.addEventListener("mousemove", handleMouseMove);
     // Initialize to center
     setMousePosition({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
-    
+
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
@@ -29,17 +29,15 @@ export default function Background() {
 
   return (
     <div style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", zIndex: -1, pointerEvents: "none", backgroundColor: "var(--background)", overflow: "hidden", transition: "background-color 0.3s ease" }}>
-      
+
       {/* Base Grid */}
-      <div 
+      <div
         style={{
           position: "absolute",
           top: 0, left: 0, width: "100%", height: "100%",
-          backgroundImage: `
-            linear-gradient(to right, ${gridColor} 1px, transparent 1px),
-            linear-gradient(to bottom, ${gridColor} 1px, transparent 1px)
-          `,
-          backgroundSize: "50px 50px",
+          backgroundImage: `url("/bg2.jpg")`,
+          backgroundSize: "cover",
+          opacity: 0.5,
         }}
       />
 

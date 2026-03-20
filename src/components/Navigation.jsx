@@ -22,7 +22,7 @@ export default function Navigation() {
   ];
 
   return (
-    <nav className="glass-panel" style={{ position: "sticky", top: 0, zIndex: 100, borderRadius: "0 0 0px 0px", margin: "0 0px", padding: "15px 20px" }}>
+    <nav className="glass-panel" style={{ position: "sticky", top: 0, zIndex: 100, borderRadius: "0 0 0px 0px", backgroundColor: "var(--background)", backdropFilter: "blur(10px)", margin: "0 0px", padding: "15px 20px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <Link href={isAdmin ? "/admin" : "/"} style={{ display: "flex", flexDirection: "column", textDecoration: "none" }}>
           <span style={{ fontSize: "1.5rem", fontWeight: "900", color: "var(--accent)", textTransform: "uppercase", letterSpacing: "2px", lineHeight: 1 }}>

@@ -22,7 +22,7 @@
 }
 
 [data-theme='dark'] {
-  --background: #050505;
+  --background: rgba(5, 5, 5, 0.6);
   --accent: #fffbf3;
   --accent-text: #fffbf3;
   --text-dark: #ffffff;
@@ -76,6 +76,12 @@ a {
   border: var(--glass-border);
   box-shadow: var(--glass-shadow);
   border-radius: var(--border-radius);
+  transition: all 0.3s ease;
+}
+
+.glass-panel:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
 }
 
 .glass-panel-dark {
@@ -127,5 +133,10 @@ a {
 @media (min-width: 768px) {
   .section {
     padding: 100px 0;
+  }
+
+  .container {
+    max-width: 80dvw;
+    margin: 0 auto;
   }
 }
