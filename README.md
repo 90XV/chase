@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ☕ Chase
 
-## Getting Started
+Chase the Caffeine. A premium, modern web application for **Chase Coffee**, built with Next.js and Supabase.
 
-First, run the development server:
+![Chase Screenshot](/public/CHASELOGO.png)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## ✨ Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- 🌓 **Dynamic Theming:** Seamless transition between light and dark modes with persistent preferences.
+- 🛒 **Interactive Menu:** A fluid, real-time ordering experience for coffee and specialty drinks.
+- 🚚 **Fast Delivery Tracking:** Built-in distance calculations and order status monitoring.
+- 🔐 **Admin Dashboard:** Comprehensive management suite for inventory, order queues, and partner relations.
+- 🤝 **Partner Ecosystem:** A showcase for local collaborators and businesses.
+- 📜 **Digital Catering:** Interactive PDF viewer for catering menus and special events.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## 🛠️ Tech Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Framework:** [Next.js 16](https://nextjs.org/) (App Router & Turbopack)
+- **Database:** [Supabase](https://supabase.com/) (Real-time DB & Auth)
+- **Animations:** [Framer Motion](https://www.framer.com/motion/)
+- **Icons:** [Lucide React](https://lucide.dev/)
+- **Visuals:** [Three.js](https://threejs.org/) (React Three Fiber)
+- **Styling:** Vanilla CSS with a focus on Glassmorphism and modern aesthetics.
 
-## Learn More
+## 🚀 Getting Started
 
-To learn more about Next.js, take a look at the following resources:
+### Prerequisites
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Node.js installed
+- A Supabase project
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Setup
 
-## Deploy on Vercel
+1. **Clone and Install:**
+   ```bash
+   npm install
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+2. **Environment Configuration:**
+   Create a `.env.local` file in the root:
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+3. **Database Initialization:**
+   Run the SQL scripts located in `supabase/queries/` via the Supabase SQL Editor in the following order:
+   - `schema.sql`
+   - `partners.sql`
+   - `contact-messages.sql`
+   - `fix-db.sql`
+
+4. **Run Locally:**
+   ```bash
+   npm run dev
+   ```
+
+## 📂 Project Structure
+
+- `src/app/`: Next.js pages and layouts (Home, Order, Admin, Partners, Catering).
+- `src/components/`: Modular UI components (Navigation, Background, Viewers).
+- `src/lib/`: Context providers (Cart, Supabase, Theme) and utility functions.
+- `supabase/queries/`: SQL scripts for database setup and management.
+
+---
+
+Built with ❤️ for CHASE.
