@@ -13,14 +13,28 @@ export function SupabaseProvider({ children }) {
   const [partners, setPartners] = useState([]);
   const [myActiveOrderId, setMyActiveOrderId] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [user, setUser] = useState(null);
+  const [session, setSession] = useState(null);
 
   const mapItem = (i) => ({ ...i, iconName: i.icon_name, stockLevel: i.stock_level });
   const mapOrder = (o) => ({ ...o, createdAt: o.created_at, queueNumber: o.queue_number });
 
   useEffect(() => {
+    // Check initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+    });
+
     const loadData = async () => {
       const [{ data: menuData }, { data: ordersData }, { data: chatsData }, { data: contactData }, { data: partnersData }] = await Promise.all([
-        supabase.from('menu_items').select('*').order('id'),
+        supabase.from('menu_items').select('*').order('sort_order', { ascending: true }),
         supabase.from('orders').select('*').order('created_at', { ascending: false }),
         supabase.from('chats').select('*').order('created_at', { ascending: true }),
         supabase.from('contact_messages').select('*').order('created_at', { ascending: false }),
@@ -100,6 +114,7 @@ export function SupabaseProvider({ children }) {
       .subscribe();
 
     return () => {
+      subscription.unsubscribe();
       supabase.removeChannel(menuSub);
       supabase.removeChannel(ordersSub);
       supabase.removeChannel(chatsSub);
@@ -110,20 +125,30 @@ export function SupabaseProvider({ children }) {
 
   const updateItem = async (id, updates) => {
     // Map camelCase to snake_case for Supabase
-    const dbUpdates = { ...updates };
-    if (dbUpdates.stockLevel !== undefined) {
-      dbUpdates.stock_level = dbUpdates.stockLevel;
-      delete dbUpdates.stockLevel;
-    }
-    if (dbUpdates.iconName !== undefined) {
-      dbUpdates.icon_name = dbUpdates.iconName;
-      delete dbUpdates.iconName;
-    }
+    const dbUpdate = {
+      name: updates.name,
+      price: updates.price,
+      stock_level: updates.stockLevel,
+      status: updates.status,
+      icon_name: updates.iconName,
+      description: updates.description,
+      supports_temp: updates.supports_temp,
+      category: updates.category
+    };
+
+    // Filter out undefined values and map camelCase to snake_case
+    Object.keys(dbUpdate).forEach(key => {
+      if (dbUpdate[key] === undefined) {
+        delete dbUpdate[key];
+      }
+    });
+
     // Remove image update since column seems to be missing in DB
-    delete dbUpdates.image;
+    delete dbUpdate.image;
 
     setMenuItems(prev => prev.map(item => item.id === id ? { ...item, ...updates } : item));
-    await supabase.from('menu_items').update(dbUpdates).eq('id', id);
+    const { error } = await supabase.from('menu_items').update(dbUpdate).eq('id', id);
+    if (error) throw error;
   };
 
   const updateStock = async (id, newStock) => {
@@ -142,12 +167,15 @@ export function SupabaseProvider({ children }) {
 
     const newOrder = {
       id,
-      status: "Preparing",
+      status: "Pending Confirmation",
       queue_number: queueNumber,
       method: order.method,
       distance: order.distance,
       total: order.total,
       items: order.items,
+      payment_method: order.paymentMethod || 'cash',
+      payment_status: 'pending',
+      payment_proof: order.paymentProof || null
     };
 
     setOrders(prev => [{...newOrder, createdAt: new Date().toISOString(), queueNumber}, ...prev]);
@@ -172,6 +200,8 @@ export function SupabaseProvider({ children }) {
         await updateStock(menuItem.id, newStock);
       }
     }
+
+    return newOrder;
   };
 
   const updateOrderStatus = async (id, status) => {
@@ -247,7 +277,10 @@ export function SupabaseProvider({ children }) {
       stock_level: parseInt(item.stockLevel) || 0, 
       icon_name: item.iconName || "Coffee", 
       description: item.description || "",
-      status: parseInt(item.stockLevel) > 0 ? "In Stock" : "Sold Out"
+      status: parseInt(item.stockLevel) > 0 ? "In Stock" : "Sold Out",
+      sort_order: menuItems.length,
+      supports_temp: item.supports_temp || false,
+      category: item.category || "General"
     };
     const { error } = await supabase.from('menu_items').insert([dbItem]);
     if (error) throw error;
@@ -258,8 +291,67 @@ export function SupabaseProvider({ children }) {
     await supabase.from('menu_items').delete().eq('id', id);
   };
 
+  const signIn = async (email, password) => {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+    return data;
+  };
+
+  const signOut = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
+  };
+
+  const uploadPaymentProof = async (orderId, file) => {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${orderId}.${fileExt}`;
+    const filePath = `proofs/${fileName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('payment-proofs')
+      .upload(filePath, file, { upsert: true });
+
+    if (uploadError) throw uploadError;
+
+    // Store the PATH instead of the public URL for security
+    await supabase.from('orders').update({ payment_proof: filePath }).eq('id', orderId);
+    return filePath;
+  };
+
+  const getSignedImageUrl = async (path) => {
+    const { data, error } = await supabase.storage
+      .from('payment-proofs')
+      .createSignedUrl(path, 3600); // 1 hour link
+
+    if (error) throw error;
+    return data.signedUrl;
+  };
+
+  const reorderMenuItems = async (updatedItems) => {
+    // Optimistically update local state
+    setMenuItems(updatedItems);
+
+    // Update each item's sort_order in Supabase
+    // We can use upsert if we have IDs
+    const updates = updatedItems.map((item, index) => ({
+      id: item.id,
+      sort_order: index,
+      name: item.name, // Required for upsert if not using ON CONFLICT correctly, but better to use update loop for safety
+    }));
+
+    // Using a loop for individual updates to be safe with RLS and specific columns
+    for (let i = 0; i < updatedItems.length; i++) {
+      await supabase.from('menu_items').update({ sort_order: i }).eq('id', updatedItems[i].id);
+    }
+  };
+
+  const confirmPayment = async (orderId) => {
+    setOrders(prev => prev.map(o => o.id === orderId ? { ...o, payment_status: 'paid', status: 'Preparing' } : o));
+    await supabase.from('orders').update({ payment_status: 'paid', status: 'Preparing' }).eq('id', orderId);
+  };
+
   return (
-    <SupabaseContext.Provider value={{ menuItems, orders, chats, contactMessages, partners, myActiveOrderId, updateItem, updateStock, addMenuItem, removeMenuItem, submitOrder, updateOrderStatus, dismissActiveOrder, recoverOrder, sendMessage, markChatRead, markMessageRead, addPartner, updatePartner, removePartner, isLoaded }}>
+    <SupabaseContext.Provider value={{ user, session, signIn, signOut, menuItems, orders, chats, contactMessages, partners, myActiveOrderId, updateItem, updateStock, addMenuItem, removeMenuItem, reorderMenuItems, submitOrder, updateOrderStatus, dismissActiveOrder, recoverOrder, sendMessage, markChatRead, markMessageRead, addPartner, updatePartner, removePartner, uploadPaymentProof, getSignedImageUrl, confirmPayment, isLoaded }}>
       {children}
     </SupabaseContext.Provider>
   );

@@ -2,20 +2,22 @@
 
 import { useState, useEffect } from "react";
 import { useDB } from "@/lib/SupabaseContext";
-import { Lock, Unlock, Image as ImageIcon, Coffee, Clock, CheckCircle, MessageSquare, X, Mail, Inbox, Users, Trash2, Plus, Pencil } from "lucide-react";
+import { Lock, Unlock, Image as ImageIcon, Coffee, Clock, CheckCircle, MessageSquare, X, Mail, Inbox, Users, Trash2, Plus, Pencil, ChevronUp, ChevronDown } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function AdminPage() {
-  const { menuItems, orders, chats, contactMessages, partners, sendMessage, markChatRead, markMessageRead, updateItem, updateStock, addMenuItem, removeMenuItem, updateOrderStatus, addPartner, updatePartner, removePartner } = useDB();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { user, signIn, signOut, menuItems, orders, chats, contactMessages, partners, sendMessage, markChatRead, markMessageRead, updateItem, updateStock, addMenuItem, removeMenuItem, reorderMenuItems, updateOrderStatus, confirmPayment, getSignedImageUrl, addPartner, updatePartner, removePartner } = useDB();
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [activeTab, setActiveTab] = useState("inventory"); // 'inventory' | 'orders' | 'inbox' | 'partners'
   const [activeChatOrderId, setActiveChatOrderId] = useState(null);
   const [chatMsg, setChatMsg] = useState("");
   const [newPartner, setNewPartner] = useState({ company_name: "", contact_number: "", website: "", bio: "", images: [] });
   const [editingPartner, setEditingPartner] = useState(null);
-  const [newMenu, setNewMenu] = useState({ name: "", price: "", stockLevel: "", iconName: "Coffee", description: "" });
+  const [newMenu, setNewMenu] = useState({ name: "", price: "", stockLevel: "", iconName: "Coffee", description: "", supports_temp: false, category: "General" });
   const [showAddMenu, setShowAddMenu] = useState(false);
+  const [viewingProofId, setViewingProofId] = useState(null);
+  const [viewingProofUrl, setViewingProofUrl] = useState(null);
 
   // Mark as read whenever the chat active tab is open and chats update
   useEffect(() => {
@@ -24,17 +26,27 @@ export default function AdminPage() {
     }
   }, [chats.length, activeChatOrderId, markChatRead]);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    if (password === process.env.NEXT_PUBLIC_ADMIN_KEY) {
-      setIsAuthenticated(true);
-    } else {
-      alert("Incorrect master key.");
+    try {
+      await signIn(email, password);
+    } catch (err) {
+      alert("Login failed: " + err.message);
     }
   };
 
-  const handlePriceChange = (id, val) => {
-    updateItem(id, { price: parseFloat(val) || 0 });
+  const handlePriceChange = (id, price) => {
+    updateItem(id, { price: parseFloat(price) });
+  };
+
+  const moveItem = (index, direction) => {
+    const newItems = [...menuItems];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= newItems.length) return;
+
+    // Swap
+    [newItems[index], newItems[targetIndex]] = [newItems[targetIndex], newItems[index]];
+    reorderMenuItems(newItems);
   };
 
   const handleStockChange = (id, val) => {
@@ -49,7 +61,7 @@ export default function AdminPage() {
     }
   };
 
-  if (!isAuthenticated) {
+  if (!user) {
     return (
       <div className="container section" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "60vh" }}>
         <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="glass-panel-dark" style={{ padding: "40px", textAlign: "center", width: "100%", maxWidth: "400px" }}>
@@ -57,15 +69,24 @@ export default function AdminPage() {
           <h2 style={{ marginBottom: "30px", textTransform: "uppercase" }}>Admin Access</h2>
           <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
             <input
-              type="password"
-              placeholder="Enter Master Key..."
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              type="email"
+              placeholder="Admin Email..."
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
               style={{ padding: "15px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.2)", background: "rgba(255,255,255,0.1)", color: "#fff", fontSize: "1rem" }}
             />
-            <button type="submit" className="btn-primary">Unlock</button>
+            <input
+              type="password"
+              placeholder="Password..."
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              style={{ padding: "15px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.2)", background: "rgba(255,255,255,0.1)", color: "#fff", fontSize: "1rem" }}
+            />
+            <button type="submit" className="btn-primary">Login</button>
           </form>
-          <p style={{ marginTop: "20px", fontSize: "0.85rem", opacity: 0.6 }}>Use your master key to unlock</p>
+          <p style={{ marginTop: "20px", fontSize: "0.85rem", opacity: 0.6 }}>Authenticated access only</p>
         </motion.div>
       </div>
     );
@@ -77,8 +98,8 @@ export default function AdminPage() {
         <h1 style={{ fontSize: "2.5rem", fontWeight: "900", textTransform: "uppercase", color: "var(--accent)" }}>
           Admin <span style={{ color: "var(--primary)" }}>Dashboard</span>
         </h1>
-        <button onClick={() => setIsAuthenticated(false)} style={{ display: "flex", alignItems: "center", gap: "8px", background: "transparent", border: "1px solid var(--primary)", color: "var(--primary)", padding: "8px 16px", borderRadius: "20px", cursor: "pointer" }}>
-          <Unlock size={16} /> Lock System
+        <button onClick={signOut} style={{ display: "flex", alignItems: "center", gap: "8px", background: "transparent", border: "1px solid var(--primary)", color: "var(--primary)", padding: "8px 16px", borderRadius: "20px", cursor: "pointer" }}>
+          <Unlock size={16} /> Sign Out
         </button>
       </div>
 
@@ -148,10 +169,22 @@ export default function AdminPage() {
                   style={{ padding: "10px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.05)", color: "inherit" }}
                 />
                 <input
-                  type="text" placeholder="Icon (Coffee, Zap, etc)" value={newMenu.iconName}
+                  type="text" placeholder="Icon (Coffee, Zap, Leaf, etc)" value={newMenu.iconName}
                   onChange={e => setNewMenu({ ...newMenu, iconName: e.target.value })}
                   style={{ padding: "10px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.05)", color: "inherit" }}
                 />
+                <input
+                  type="text" placeholder="Category (e.g. Matcha, Fizzy)" value={newMenu.category}
+                  onChange={e => setNewMenu({ ...newMenu, category: e.target.value })}
+                  style={{ padding: "10px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.05)", color: "inherit" }}
+                />
+                <label style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "0.9rem", cursor: "pointer" }}>
+                  <input 
+                    type="checkbox" checked={newMenu.supports_temp} 
+                    onChange={e => setNewMenu({ ...newMenu, supports_temp: e.target.checked })} 
+                  />
+                  Supports Hot/Ice
+                </label>
               </div>
               <div style={{ marginTop: "15px" }}>
                 <textarea
@@ -165,7 +198,7 @@ export default function AdminPage() {
                   if (!newMenu.name || !newMenu.price) return alert("Name and price are required");
                   try {
                     await addMenuItem(newMenu);
-                    setNewMenu({ name: "", price: "", stockLevel: "", iconName: "Coffee", description: "" });
+                    setNewMenu({ name: "", price: "", stockLevel: "", iconName: "Coffee", description: "", supports_temp: false, category: "General" });
                     setShowAddMenu(false);
                     alert("Menu item added successfully!");
                   } catch (err) {
@@ -182,16 +215,36 @@ export default function AdminPage() {
           <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", minWidth: "600px" }}>
             <thead>
               <tr style={{ borderBottom: "1px solid rgba(0,0,0,0.1)" }}>
+                <th style={{ padding: "15px 10px", opacity: 0.8, width: "60px" }}>Order</th>
                 <th style={{ padding: "15px 10px", opacity: 0.8 }}>Item</th>
                 <th style={{ padding: "15px 10px", opacity: 0.8, width: "120px" }}>Price ($)</th>
                 <th style={{ padding: "15px 10px", opacity: 0.8, width: "120px" }}>Stock Level</th>
+                <th style={{ padding: "15px 10px", opacity: 0.8, width: "100px" }}>Hot/Ice</th>
                 <th style={{ padding: "15px 10px", opacity: 0.8, width: "150px" }}>Status</th>
                 <th style={{ padding: "15px 10px", opacity: 0.8, width: "150px" }}>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {menuItems.map((item) => (
+               {menuItems.map((item, idx) => (
                 <tr key={item.id} style={{ borderBottom: "1px solid rgba(0,0,0,0.05)" }}>
+                  <td style={{ padding: "15px 10px" }}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+                      <button 
+                        onClick={() => moveItem(idx, 'up')} 
+                        disabled={idx === 0}
+                        style={{ background: "none", border: "none", color: "inherit", opacity: idx === 0 ? 0.2 : 0.6, cursor: idx === 0 ? "default" : "pointer", padding: 0 }}
+                      >
+                        <ChevronUp size={20} />
+                      </button>
+                      <button 
+                        onClick={() => moveItem(idx, 'down')} 
+                        disabled={idx === menuItems.length - 1}
+                        style={{ background: "none", border: "none", color: "inherit", opacity: idx === menuItems.length - 1 ? 0.2 : 0.6, cursor: idx === menuItems.length - 1 ? "default" : "pointer", padding: 0 }}
+                      >
+                        <ChevronDown size={20} />
+                      </button>
+                    </div>
+                  </td>
                   <td style={{ padding: "15px 10px", fontWeight: "700" }}>{item.name}</td>
                   <td style={{ padding: "15px 10px" }}>
                     <input
@@ -208,6 +261,13 @@ export default function AdminPage() {
                       value={item.stockLevel}
                       onChange={(e) => handleStockChange(item.id, e.target.value)}
                       style={{ width: "80px", padding: "8px", borderRadius: "5px", border: "1px solid rgba(0,0,0,0.2)", background: "rgba(255,255,255,0.5)", color: "inherit", fontSize: "1rem" }}
+                    />
+                  </td>
+                  <td style={{ padding: "15px 10px" }}>
+                    <input 
+                      type="checkbox" 
+                      checked={item.supports_temp} 
+                      onChange={(e) => updateItem(item.id, { supports_temp: e.target.checked })}
                     />
                   </td>
                   <td style={{ padding: "15px 10px" }}>
@@ -266,9 +326,49 @@ export default function AdminPage() {
                         <p style={{ fontWeight: "700", marginBottom: "5px" }}>Method: {order.method.toUpperCase()} {order.method === "delivery" && `(${order.distance} miles)`}</p>
                         <ul style={{ listStyle: "inside", opacity: 0.9 }}>
                           {order.items.map((item, idx) => (
-                            <li key={idx}>{item.quantity}x {item.name}</li>
+                            <li key={idx}>
+                              {item.quantity}x {item.name} 
+                              {item.selection && <span style={{ fontSize: "0.8rem", opacity: 0.7, fontWeight: "700", marginLeft: "5px" }}>({item.selection.toUpperCase()})</span>}
+                            </li>
                           ))}
                         </ul>
+                        <div style={{ marginTop: "15px", padding: "10px", background: "rgba(255,255,255,0.05)", borderRadius: "8px", fontSize: "0.9rem" }}>
+                          <p><span style={{ opacity: 0.6 }}>Payment:</span> <strong style={{ color: "var(--accent)" }}>{order.payment_method?.toUpperCase()}</strong></p>
+                          <p><span style={{ opacity: 0.6 }}>Payment Status:</span> <strong style={{ color: order.payment_status === 'paid' ? '#2ecc71' : '#f1c40f' }}>{order.payment_status?.toUpperCase()}</strong></p>
+                          {order.payment_proof && (
+                            <div style={{ marginTop: "10px" }}>
+                              <button 
+                                onClick={async () => {
+                                  if (viewingProofId === order.id) {
+                                    setViewingProofId(null);
+                                    setViewingProofUrl(null);
+                                  } else {
+                                    try {
+                                      const url = await getSignedImageUrl(order.payment_proof);
+                                      setViewingProofId(order.id);
+                                      setViewingProofUrl(url);
+                                    } catch (err) {
+                                      alert("Failed to load proof: " + err.message);
+                                    }
+                                  }
+                                }}
+                                style={{ display: "inline-flex", alignItems: "center", gap: "5px", color: "var(--primary)", textDecoration: "underline", background: "none", border: "none", cursor: "pointer", padding: 0, fontSize: "0.9rem" }}
+                              >
+                                <ImageIcon size={14} /> {viewingProofId === order.id ? "Hide Payment Receipt" : "View Payment Receipt"}
+                              </button>
+                              
+                              {viewingProofId === order.id && viewingProofUrl && (
+                                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} style={{ marginTop: "15px", overflow: "hidden" }}>
+                                  <img 
+                                    src={viewingProofUrl} 
+                                    alt="Payment Proof" 
+                                    style={{ width: "100%", maxWidth: "300px", borderRadius: "8px", border: "1px solid var(--glass-border)", display: "block" }} 
+                                  />
+                                </motion.div>
+                              )}
+                            </div>
+                          )}
+                        </div>
                       </div>
                       <div style={{ display: "flex", flexDirection: "column", gap: "10px", alignItems: "flex-end" }}>
                         <div style={{ display: "flex", gap: "10px" }}>
@@ -285,6 +385,16 @@ export default function AdminPage() {
                             {order.status === "Completed" ? <CheckCircle size={16} /> : <Clock size={16} />} {order.status}
                           </div>
                         </div>
+                        {order.status === "Pending Confirmation" && (
+                          <div style={{ display: "flex", gap: "10px", marginTop: "10px", flexWrap: "wrap", justifyContent: "flex-end" }}>
+                            <button onClick={() => confirmPayment(order.id)} className="btn-primary" style={{ padding: "8px 20px", fontSize: "1rem" }}>
+                              {order.payment_method === 'cash' ? 'Confirm Order & Prepare' : 'Confirm Payment & Prepare'}
+                            </button>
+                            <button onClick={() => updateOrderStatus(order.id, "Cancelled")} className="btn-primary" style={{ padding: "8px 20px", fontSize: "1rem", background: "#e74c3c", borderColor: "#e74c3c" }}>
+                              Cancel Order
+                            </button>
+                          </div>
+                        )}
                         {order.status === "Preparing" && (
                           <div style={{ display: "flex", gap: "10px", marginTop: "10px", flexWrap: "wrap", justifyContent: "flex-end" }}>
                             <button onClick={() => updateOrderStatus(order.id, "Ready")} className="btn-primary" style={{ padding: "6px 16px", fontSize: "0.9rem", background: "#2ecc71", borderColor: "#2ecc71", color: "#fff" }}>Ready for Pickup</button>

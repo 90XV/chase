@@ -13,6 +13,9 @@ export default function CheckoutPage() {
   const [method, setMethod] = useState("pickup"); // 'pickup' | 'delivery'
   const [distance, setDistance] = useState(0);
   const [placed, setPlaced] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState("transfer"); // 'cash' | 'transfer'
+  const [paymentFile, setPaymentFile] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Mock distance rate: $1.50 per km/mile
   const deliveryFee = method === "delivery" ? distance * 1.5 : 0;
@@ -20,19 +23,41 @@ export default function CheckoutPage() {
 
   const [error, setError] = useState("");
 
+  const { uploadPaymentProof } = useDB();
+
   const handlePlaceOrder = async () => {
+    if (paymentMethod === "transfer" && !paymentFile) {
+      setError("Please upload your payment screenshot for bank transfer.");
+      return;
+    }
+
     try {
+      setIsSubmitting(true);
       setError("");
-      await submitOrder({
+      
+      const orderData = {
         items,
         method,
         distance,
-        total: finalTotal
-      });
+        total: finalTotal,
+        paymentMethod
+      };
+
+      // Submit order first to get ID
+      const orderResponse = await submitOrder(orderData);
+      const orderId = orderResponse?.id || items[0].id + Math.random(); // Fallback if ID not returned
+
+      // If transfer, upload proof
+      if (paymentMethod === "transfer" && paymentFile) {
+        await uploadPaymentProof(orderId, paymentFile);
+      }
+
       setPlaced(true);
       clearCart();
     } catch (err) {
       setError(err.message || "Failed to place order. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -107,6 +132,43 @@ export default function CheckoutPage() {
             )}
           </div>
 
+          <div className="glass-panel" style={{ padding: "20px", marginBottom: "30px" }}>
+            <h3 style={{ marginBottom: "15px" }}>Payment Method</h3>
+            <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
+              <button 
+                onClick={() => setPaymentMethod("transfer")}
+                style={{ flex: 1, padding: "12px", borderRadius: "10px", border: paymentMethod === "transfer" ? "2px solid var(--primary)" : "1px solid var(--glass-border)", background: paymentMethod === "transfer" ? "rgba(74, 112, 137, 0.1)" : "transparent", cursor: "pointer", color: "inherit", fontWeight: "700" }}
+              >
+                Bank Transfer
+              </button>
+              <button 
+                onClick={() => setPaymentMethod("cash")}
+                style={{ flex: 1, padding: "12px", borderRadius: "10px", border: paymentMethod === "cash" ? "2px solid var(--primary)" : "1px solid var(--glass-border)", background: paymentMethod === "cash" ? "rgba(74, 112, 137, 0.1)" : "transparent", cursor: "pointer", color: "inherit", fontWeight: "700" }}
+              >
+                Cash
+              </button>
+            </div>
+
+            {paymentMethod === "transfer" && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ background: "rgba(0,0,0,0.2)", padding: "15px", borderRadius: "10px", fontSize: "0.9rem" }}>
+                <p style={{ marginBottom: "10px", fontWeight: "700", color: "var(--accent)" }}>Transfer to:</p>
+                <p>Baiduri: 00-00-000-000000</p>
+                <p style={{ marginBottom: "15px" }}>BIBD: 00-00-00-00000000</p>
+                
+                <label style={{ display: "block", marginBottom: "8px", opacity: 0.8 }}>Upload Screenshot:</label>
+                <input 
+                  type="file" 
+                  accept="image/*"
+                  onChange={(e) => setPaymentFile(e.target.files[0])}
+                  style={{ width: "100%", fontSize: "0.8rem" }}
+                />
+              </motion.div>
+            )}
+            {paymentMethod === "cash" && (
+              <p style={{ fontSize: "0.9rem", opacity: 0.7, fontStyle: "italic" }}>Please have the exact amount ready upon collection/delivery.</p>
+            )}
+          </div>
+
           <div className="glass-panel-dark" style={{ padding: "20px", marginBottom: "30px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
               <span>Subtotal</span>
@@ -133,10 +195,11 @@ export default function CheckoutPage() {
 
           <button 
             onClick={handlePlaceOrder}
+            disabled={isSubmitting}
             className="btn-primary" 
-            style={{ width: "100%", padding: "15px", fontSize: "1.1rem" }}
+            style={{ width: "100%", padding: "15px", fontSize: "1.1rem", opacity: isSubmitting ? 0.7 : 1 }}
           >
-            Place Order
+            {isSubmitting ? "Processing..." : "Place Order"}
           </button>
         </>
       )}

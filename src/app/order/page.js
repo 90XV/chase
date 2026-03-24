@@ -1,18 +1,21 @@
 "use client";
 
+import { useState } from "react";
 import { useCart } from "@/lib/CartContext";
 import { useDB } from "@/lib/SupabaseContext";
-import { Coffee, CupSoda, Zap, Droplet, Plus, Minus, ShoppingBag } from "lucide-react";
+import { Coffee, CupSoda, Zap, Droplet, Plus, Minus, ShoppingBag, Leaf, Sprout, Bean, Snowflake, Flame } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 
 export default function OrderPage() {
   const { items, addToCart, removeFromCart, itemCount } = useCart();
   const { menuItems } = useDB();
-  const iconMap = { Coffee, CupSoda, Zap, Droplet };
+  const iconMap = { Coffee, CupSoda, Zap, Droplet, Leaf, Sprout, Bean };
+  
+  const [selections, setSelections] = useState({}); // { itemId: 'ice' | 'hot' }
 
-  const getQuantity = (id) => {
-    const item = items.find(i => i.id === id);
+  const getQuantity = (id, selection = "ice") => {
+    const item = items.find(i => i.id === id && i.selection === selection);
     return item ? item.quantity : 0;
   };
 
@@ -25,8 +28,9 @@ export default function OrderPage() {
       <div style={{ display: "flex", flexDirection: "column", gap: "20px", alignItems: "center" }}>
         {menuItems.map((item, i) => {
           const Icon = iconMap[item.iconName] || Coffee;
-          const qty = getQuantity(item.id);
           const isSoldOut = item.status === "Sold Out" || item.stockLevel <= 0;
+          const currentTemp = selections[item.id] || 'ice';
+          const qty = getQuantity(item.id, currentTemp);
 
           return (
             <motion.div
@@ -48,26 +52,45 @@ export default function OrderPage() {
                 </div>
               </div>
 
-              <div style={{ display: "flex", alignItems: "center", gap: "10px", flex: "0 0 auto", marginLeft: "auto" }}>
-                {isSoldOut ? (
-                  <button disabled className="btn-primary" style={{ padding: "8px 20px", background: "var(--surface)", border: "1px solid var(--glass-border)", color: "var(--text-dark)", opacity: 0.5, cursor: "not-allowed" }}>
-                    Unavailable
-                  </button>
-                ) : qty > 0 ? (
-                  <>
-                    <button onClick={() => removeFromCart(item.id)} style={{ background: "transparent", border: "1px solid var(--text-dark)", padding: "5px", borderRadius: "50%", cursor: "pointer", color: "inherit" }}>
-                      <Minus size={18} />
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "10px", flex: "0 0 auto", marginLeft: "auto" }}>
+                {item.supports_temp && !isSoldOut && (
+                  <div style={{ display: "flex", background: "rgba(0,0,0,0.1)", borderRadius: "20px", padding: "2px" }}>
+                    <button 
+                      onClick={() => setSelections(prev => ({ ...prev, [item.id]: 'hot' }))}
+                      style={{ padding: "4px 12px", borderRadius: "18px", border: "none", fontSize: "0.7rem", fontWeight: "700", cursor: "pointer", background: currentTemp === 'hot' ? "var(--accent)" : "transparent", color: currentTemp === 'hot' ? "#fff" : "inherit" }}
+                    >
+                      HOT
                     </button>
-                    <span style={{ fontWeight: "700", width: "20px", textAlign: "center" }}>{qty}</span>
-                    <button onClick={() => addToCart(item)} style={{ background: "var(--primary)", border: "none", color: "#fff", padding: "5px", borderRadius: "50%", cursor: "pointer" }}>
-                      <Plus size={18} />
+                    <button 
+                      onClick={() => setSelections(prev => ({ ...prev, [item.id]: 'ice' }))}
+                      style={{ padding: "4px 12px", borderRadius: "18px", border: "none", fontSize: "0.7rem", fontWeight: "700", cursor: "pointer", background: currentTemp === 'ice' ? "var(--primary)" : "transparent", color: currentTemp === 'ice' ? "#fff" : "inherit" }}
+                    >
+                      ICE
                     </button>
-                  </>
-                ) : (
-                  <button onClick={() => addToCart(item)} className="btn-primary" style={{ padding: "8px 20px" }}>
-                    Add
-                  </button>
+                  </div>
                 )}
+
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  {isSoldOut ? (
+                    <button disabled className="btn-primary" style={{ padding: "8px 20px", background: "var(--surface)", border: "1px solid var(--glass-border)", color: "var(--text-dark)", opacity: 0.5, cursor: "not-allowed" }}>
+                      Unavailable
+                    </button>
+                  ) : qty > 0 ? (
+                    <>
+                      <button onClick={() => removeFromCart(item.id, currentTemp)} style={{ background: "transparent", border: "1px solid var(--text-dark)", padding: "5px", borderRadius: "50%", cursor: "pointer", color: "inherit" }}>
+                        <Minus size={18} />
+                      </button>
+                      <span style={{ fontWeight: "700", width: "20px", textAlign: "center" }}>{qty}</span>
+                      <button onClick={() => addToCart(item, currentTemp)} style={{ background: "var(--primary)", border: "none", color: "#fff", padding: "5px", borderRadius: "50%", cursor: "pointer" }}>
+                        <Plus size={18} />
+                      </button>
+                    </>
+                  ) : (
+                    <button onClick={() => addToCart(item, currentTemp)} className="btn-primary" style={{ padding: "8px 20px" }}>
+                      Add
+                    </button>
+                  )}
+                </div>
               </div>
             </motion.div>
           );
