@@ -13,6 +13,23 @@ Chase the Caffeine. A premium, modern web application for **Chase Coffee**, buil
 - 🤝 **Partner Ecosystem:** A showcase for local collaborators and businesses.
 - 📜 **Digital Catering:** Interactive PDF viewer for catering menus and special events.
 
+## 🚀 Deployment (Cloudflare Pages)
+
+Chase is designed to run on the Edge! To deploy to Cloudflare:
+
+1. **GitHub:** Push your code to a GitHub repository.
+1. **Cloudflare Dashboard:** Create a new "Pages" project and connect your repo.
+1. **Build Settings:**
+   - **Framework:** `Next.js`
+   - **Build Command:** `npm run build:cf`
+   - **Output Directory:** `.vercel/output/static`
+1. **Environment Variables:** Add these in the Cloudflare Dashboard (Settings -> Variables):
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `NODE_VERSION`: `18+`
+
+---
+
 ## 🛠️ Tech Stack
 
 - **Framework:** [Next.js 16](https://nextjs.org/) (App Router & Turbopack)
