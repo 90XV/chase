@@ -54,7 +54,7 @@ export default function CateringPage() {
         </div>
 
         {/* Contact Cards */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "20px", marginBottom: "40px", backdropFilter: "blur(10px)" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "20px", marginBottom: "40px" }}>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="glass-panel" style={{ padding: "25px", textAlign: "center", backdropFilter: "blur(10px)" }}>
             <Mail size={36} color="var(--primary)" style={{ marginBottom: "12px" }} />
             <h3 style={{ marginBottom: "8px" }}>Email</h3>

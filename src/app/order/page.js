@@ -18,24 +18,24 @@ export default function OrderPage() {
 
   return (
     <div className="container section" style={{ paddingBottom: "100px" }}>
-      <h1 style={{ fontSize: "3rem", fontWeight: "900", marginBottom: "40px", textTransform: "uppercase", color: "var(--accent)" }}>
+      <h1 style={{ fontSize: "3rem", fontWeight: "900", marginBottom: "40px", textAlign: "center", textTransform: "uppercase", color: "var(--accent)" }}>
         Order <span style={{ color: "var(--primary)" }}>Menu</span>
       </h1>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "20px", alignItems: "center" }}>
         {menuItems.map((item, i) => {
           const Icon = iconMap[item.iconName] || Coffee;
           const qty = getQuantity(item.id);
           const isSoldOut = item.status === "Sold Out" || item.stockLevel <= 0;
 
           return (
-            <motion.div 
+            <motion.div
               key={item.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.1 }}
-              className="glass-panel" 
-              style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px", gap: "15px", flexWrap: "wrap", opacity: isSoldOut ? 0.6 : 1, filter: isSoldOut ? "grayscale(100%)" : "none" }}
+              className="glass-panel"
+              style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "var(--background)", padding: "20px", gap: "15px", flexWrap: "wrap", opacity: isSoldOut ? 0.6 : 1, filter: isSoldOut ? "grayscale(100%)" : "none", width: "min(95dvw, 800px)" }}
             >
               <div style={{ display: "flex", alignItems: "center", gap: "20px", flex: "1 1 auto" }}>
                 <div style={{ background: "rgba(74, 112, 137, 0.2)", padding: "15px", borderRadius: "12px", display: "flex", justifyContent: "center", alignItems: "center" }}>
@@ -75,13 +75,13 @@ export default function OrderPage() {
       </div>
 
       {itemCount > 0 && (
-        <motion.div 
+        <motion.div
           initial={{ y: 100 }}
           animate={{ y: 0 }}
           style={{ position: "fixed", bottom: "20px", left: "50%", transform: "translateX(-50%)", zIndex: 50, width: "calc(100% - 40px)", maxWidth: "400px" }}
         >
-          <Link href="/checkout" className="btn-primary" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", padding: "15px 30px", boxShadow: "0 10px 40px rgba(0,0,0,0.5)"}}>
-            <span style={{ display: "flex", alignItems: "center", gap: "10px" }}><ShoppingBag size={20}/> Checkout</span>
+          <Link href="/checkout" className="btn-primary" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", padding: "15px 30px", boxShadow: "0 10px 40px rgba(0,0,0,0.5)" }}>
+            <span style={{ display: "flex", alignItems: "center", gap: "10px" }}><ShoppingBag size={20} /> Checkout</span>
             <span style={{ background: "rgba(0,0,0,0.2)", padding: "4px 10px", borderRadius: "20px", fontSize: "0.9rem" }}>{itemCount} item{itemCount > 1 ? "s" : ""}</span>
           </Link>
         </motion.div>

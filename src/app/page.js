@@ -12,7 +12,7 @@ export default function Home() {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8 }}
         className="glass-panel"
-        style={{ padding: "40px", textAlign: "center", maxWidth: "600px", width: "100%", backgroundColor: "var(--background)", backdropFilter: "blur(10px)" }}
+        style={{ padding: "40px", textAlign: "center", width: "min(95dvw, 600px)", backgroundColor: "var(--background)", backdropFilter: "blur(10px)" }}
       >
         <div style={{ display: "flex", justifyContent: "center", marginBottom: "10px" }}>
           <div style={{ width: "300px", height: "300px", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
@@ -37,7 +37,7 @@ export default function Home() {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, delay: 0.2 }}
         className="glass-panel-dark"
-        style={{ padding: "30px", textAlign: "center", maxWidth: "600px", width: "100%", backdropFilter: "blur(10px)" }}
+        style={{ padding: "30px", textAlign: "center", width: "min(95dvw, 600px)", backdropFilter: "blur(10px)" }}
       >
         <h2 style={{ color: "var(--accent)", marginBottom: "15px" }}>Why Chase?</h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "20px", textAlign: "left" }}>
@@ -52,21 +52,24 @@ export default function Home() {
         </div>
       </motion.div>
 
-      <motion.div
-        initial={{ y: 50, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.8, delay: 0.2 }}
-        className="glass-panel-dark"
-        style={{ padding: "30px", textAlign: "center", maxWidth: "600px", width: "100%", backdropFilter: "blur(10px)" }}
-      >
-        <h2 style={{ color: "var(--accent)", marginBottom: "15px" }}>Partners are welcome!</h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "20px", textAlign: "left" }}>
-          <div>
-            <h3 style={{ marginBottom: "10px" }}>Small or Big</h3>
-            <p style={{ opacity: 0.8, fontSize: "0.9rem" }}>We welcome collaborators from all walks of life. </p>
+      <Link href="/partners" style={{ textDecoration: "none", color: "inherit", width: "min(95dvw, 600px)" }}>
+        <motion.div
+          initial={{ y: 50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          whileHover={{ y: -5, scale: 1.02 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="glass-panel-dark"
+          style={{ padding: "30px", textAlign: "center", width: "100%", backdropFilter: "blur(10px)", cursor: "pointer" }}
+        >
+          <h2 style={{ color: "var(--accent)", marginBottom: "15px" }}>Partners are welcome!</h2>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "20px", textAlign: "left" }}>
+            <div>
+              <h3 style={{ marginBottom: "10px" }}>Small or Big</h3>
+              <p style={{ opacity: 0.8, fontSize: "0.9rem" }}>We welcome collaborators from all walks of life. </p>
+            </div>
           </div>
-        </div>
-      </motion.div>
+        </motion.div>
+      </Link>
 
     </div >
   );

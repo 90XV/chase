@@ -20,7 +20,7 @@ export default function PartnersPage() {
         We collaborate with local vendors and businesses to bring you the best quality products and community experiences.
       </p>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))", gap: "40px" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "40px", alignItems: "center" }}>
         {partners.map((partner, i) => (
           <motion.div
             key={partner.id}
@@ -28,9 +28,9 @@ export default function PartnersPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.1 }}
             className="glass-panel"
-            style={{ padding: "30px", display: "flex", flexDirection: "column", gap: "20px" }}
+            style={{ padding: "30px", display: "flex", flexDirection: "column", gap: "20px", backgroundColor: "var(--background)", width: "min(95dvw, 800px)" }}
           >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "15px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "15px" }}>
               <h2 style={{ fontSize: "1.8rem", color: "var(--accent)" }}>{partner.company_name}</h2>
               <div style={{ display: "flex", gap: "10px" }}>
                 {partner.website && (
@@ -61,12 +61,14 @@ export default function PartnersPage() {
         ))}
       </div>
 
-      {partners.length === 0 && (
-        <div style={{ textAlign: "center", padding: "50px", opacity: 0.5 }}>
-          <Info size={48} style={{ margin: "0 auto 20px" }} />
-          <p>No partners listed yet. Check back soon!</p>
-        </div>
-      )}
-    </div>
+      {
+        partners.length === 0 && (
+          <div style={{ textAlign: "center", padding: "50px", opacity: 0.5 }}>
+            <Info size={48} style={{ margin: "0 auto 20px" }} />
+            <p>No partners listed yet. Check back soon!</p>
+          </div>
+        )
+      }
+    </div >
   );
 }

@@ -1,0 +1,22 @@
+{
+    "breadcrumbs.enabled": false,
+    "workbench.tree.renderIndentGuides": "none",
+    "workbench.sideBar.location": "right",
+    "workbench.statusBar.visible": false,
+    "workbench.layoutControl.type": "menu",
+    "workbench.activityBar.location": "bottom",
+    "workbench.editor.showTabs": "multiple",
+    "explorer.decorations.colors": false,
+    "editor.minimap.enabled": false,
+    "editor.hideCursorInOverviewRuler": true,
+    "editor.overviewRulerBorder": false,
+    "editor.scrollbar.horizontal": "hidden",
+    "editor.scrollbar.vertical": "hidden",
+    "editor.guides.highlightActiveBracketPair": true,
+    "editor.guides.bracketPairsHorizontal": true,
+    "editor.guides.indentation": false,
+    "editor.cursorBlinking": "phase",
+    "editor.cursorSmoothCaretAnimation": "on",
+    "window.menuBarVisibility": "toggle",
+    "window.title": " "
+}

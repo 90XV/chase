@@ -21,7 +21,23 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  const savedTheme = localStorage.getItem("hotwheels_theme");
+                  if (savedTheme) {
+                    document.documentElement.setAttribute("data-theme", savedTheme);
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
       <body className={`${averiaLibre.variable} ${averiaLibre.className}`}>
         <ThemeProvider>
           <SupabaseProvider>
