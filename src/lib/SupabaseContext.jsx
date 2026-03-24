@@ -19,6 +19,21 @@ export function SupabaseProvider({ children }) {
   const mapItem = (i) => ({ ...i, iconName: i.icon_name, stockLevel: i.stock_level });
   const mapOrder = (o) => ({ ...o, createdAt: o.created_at, queueNumber: o.queue_number });
 
+  const handleLookupOrder = (raw) => {
+    const found = orders.find(o => {
+      const qn = String(o.queueNumber || o.queue_number || "").trim();
+      const id = String(o.id || "").toUpperCase().trim();
+      const searchRaw = String(raw).toUpperCase().trim();
+      
+      // Match queue number (exact), or ID (exact), or short ID (last part)
+      return qn === searchRaw || 
+             id === searchRaw || 
+             id.endsWith(searchRaw) || 
+             (searchRaw.length >= 4 && id.split('-').pop() === searchRaw);
+    });
+    return found;
+  };
+
   useEffect(() => {
     // Check initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -178,23 +193,24 @@ export function SupabaseProvider({ children }) {
       payment_proof: order.paymentProof || null
     };
 
-    setOrders(prev => [{...newOrder, createdAt: new Date().toISOString(), queueNumber}, ...prev]);
-    setMyActiveOrderId(newOrder.id);
-    localStorage.setItem("hotwheels_coffee_active_order", newOrder.id);
-
     // Validate stock for all items first
     for (const item of order.items) {
-      const menuItem = menuItems.find(m => m.name === item.name);
+      const menuItem = menuItems.find(m => m.id === item.id || m.name === item.name);
       if (!menuItem || menuItem.stockLevel < item.quantity) {
-        throw new Error(`Insufficient stock for ${item.name}. Only ${menuItem?.stockLevel || 0} left.`);
+        throw new Error(`Insufficient stock for ${item.name}. ${menuItem ? `Only ${menuItem.stockLevel} left.` : "Item no longer available."}`);
       }
     }
 
     await supabase.from('orders').insert([newOrder]);
 
+    // Update state only after successful insertion
+    setOrders(prev => [{...newOrder, createdAt: new Date().toISOString(), queueNumber}, ...prev]);
+    setMyActiveOrderId(newOrder.id);
+    localStorage.setItem("hotwheels_coffee_active_order", newOrder.id);
+
     // Reduce stock for each item
     for (const item of order.items) {
-      const menuItem = menuItems.find(m => m.name === item.name);
+      const menuItem = menuItems.find(m => m.id === item.id || m.name === item.name);
       if (menuItem) {
         const newStock = Math.max(0, menuItem.stockLevel - item.quantity);
         await updateStock(menuItem.id, newStock);
@@ -208,8 +224,11 @@ export function SupabaseProvider({ children }) {
     const order = orders.find(o => o.id === id);
     const oldStatus = order?.status;
 
-    setOrders(prev => prev.map(o => o.id === id ? { ...o, status } : o));
-    await supabase.from('orders').update({ status }).eq('id', id);
+    setOrders(prev => prev.map(o => o.id === id ? { ...o, status, payment_status: status === "Cancelled" ? "cancelled" : o.payment_status } : o));
+    await supabase.from('orders').update({ 
+      status, 
+      payment_status: status === "Cancelled" ? "cancelled" : order.payment_status 
+    }).eq('id', id);
 
     // If cancelled, restore stock
     if (status === "Cancelled" && oldStatus !== "Cancelled") {
@@ -351,7 +370,7 @@ export function SupabaseProvider({ children }) {
   };
 
   return (
-    <SupabaseContext.Provider value={{ user, session, signIn, signOut, menuItems, orders, chats, contactMessages, partners, myActiveOrderId, updateItem, updateStock, addMenuItem, removeMenuItem, reorderMenuItems, submitOrder, updateOrderStatus, dismissActiveOrder, recoverOrder, sendMessage, markChatRead, markMessageRead, addPartner, updatePartner, removePartner, uploadPaymentProof, getSignedImageUrl, confirmPayment, isLoaded }}>
+    <SupabaseContext.Provider value={{ user, session, signIn, signOut, menuItems, orders, chats, contactMessages, partners, myActiveOrderId, updateItem, updateStock, addMenuItem, removeMenuItem, reorderMenuItems, submitOrder, updateOrderStatus, dismissActiveOrder, recoverOrder, handleLookupOrder, sendMessage, markChatRead, markMessageRead, addPartner, updatePartner, removePartner, uploadPaymentProof, getSignedImageUrl, confirmPayment, isLoaded }}>
       {children}
     </SupabaseContext.Provider>
   );

@@ -114,7 +114,7 @@ export default function AdminPage() {
           onClick={() => setActiveTab("orders")}
           style={{ padding: "10px 20px", borderRadius: "20px", border: "none", background: activeTab === "orders" ? "var(--primary)" : "var(--surface)", color: activeTab === "orders" ? "#fff" : "inherit", cursor: "pointer", fontWeight: "700" }}
         >
-          Barista Queue ({orders.filter(o => o.status !== "Completed").length})
+          Barista Queue ({orders.filter(o => o.status !== "Completed" && o.status !== "Cancelled").length})
         </button>
         <button
           onClick={() => setActiveTab("inbox")}
@@ -307,11 +307,11 @@ export default function AdminPage() {
       {activeTab === "orders" && (
         <div className="glass-panel" style={{ padding: "30px", background: "var(--background)" }}>
           <h2 style={{ marginBottom: "20px" }}>Active Order Queue</h2>
-          {orders.length === 0 ? (
-            <p style={{ opacity: 0.7 }}>No orders in the system.</p>
+          {orders.filter(o => o.status !== "Completed" && o.status !== "Cancelled").length === 0 ? (
+            <p style={{ opacity: 0.7 }}>No active orders in the queue.</p>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
-              {orders.map(order => {
+              {orders.filter(o => o.status !== "Completed" && o.status !== "Cancelled").map(order => {
                 const orderChats = chats.filter(c => c.order_id === order.id).sort((a, b) => new Date(a.created_at || a.createdAt) - new Date(b.created_at || b.createdAt));
                 const unreadCount = orderChats.filter(c => c.sender === 'customer' && !c.is_read).length;
 

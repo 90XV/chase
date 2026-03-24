@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Coffee, Package, Truck, CheckCircle, XCircle, X, Search } from "lucide-react";
 
 export default function OrderStatusButton() {
-  const { orders, myActiveOrderId, recoverOrder, dismissActiveOrder, chats, sendMessage, markChatRead, isLoaded } = useDB();
+  const { orders, myActiveOrderId, recoverOrder, handleLookupOrder, dismissActiveOrder, chats, sendMessage, markChatRead, isLoaded } = useDB();
   const [isOpen, setIsOpen] = useState(false);
   const [msg, setMsg] = useState("");
   const [lookupInput, setLookupInput] = useState("");
@@ -37,12 +37,7 @@ export default function OrderStatusButton() {
 
   // Order Recovery lookup
   const handleLookup = () => {
-    const raw = lookupInput.trim().toUpperCase().replace(/^#/, "");
-    const found = orders.find(o => {
-      const qn = String(o.queueNumber || o.queue_number || "");
-      const id = (o.id || "").toUpperCase();
-      return qn === raw || id === raw || id.endsWith(raw);
-    });
+    const found = handleLookupOrder(lookupInput);
     if (found) {
       recoverOrder(found.id);
       setShowLookup(false);
