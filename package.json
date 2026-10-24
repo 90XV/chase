@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:cf": "npx @cloudflare/next-on-pages@latest",
+    "build:cf": "npx --legacy-peer-deps @cloudflare/next-on-pages",
     "start": "next start",
     "lint": "eslint"
   },
@@ -23,6 +23,7 @@
     "three": "^0.183.2"
   },
   "devDependencies": {
+    "@cloudflare/next-on-pages": "^1.13.8",
     "eslint": "^9",
     "eslint-config-next": "16.1.7"
   }
